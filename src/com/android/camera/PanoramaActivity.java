@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.camera.panorama;
+package com.android.camera;
 
 import com.android.camera.ActivityBase;
 import com.android.camera.CameraDisabledException;
@@ -35,6 +35,13 @@ import com.android.camera.ui.Rotatable;
 import com.android.camera.ui.RotateImageView;
 import com.android.camera.ui.RotateLayout;
 import com.android.camera.ui.SharePopup;
+import com.android.camera.panorama.Mosaic;
+import com.android.camera.panorama.MosaicFrameProcessor;
+import com.android.camera.panorama.MosaicRenderer;
+import com.android.camera.panorama.MosaicRendererSurfaceView;
+import com.android.camera.panorama.MosaicRendererSurfaceViewRenderer;
+import com.android.camera.panorama.PanoProgressBar;
+import com.android.camera.panorama.PanoUtil;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -465,7 +472,7 @@ public class PanoramaActivity extends ActivityBase implements
                 // means users exit and come back to panorama. Do not start the
                 // preview. Preview will be started after final mosaic is
                 // generated.
-                if (!mPausing && !mThreadRunning) {
+                if (!mPausing) {
                     startCameraPreview();
                 }
             }
@@ -933,7 +940,11 @@ public class PanoramaActivity extends ActivityBase implements
 
     private void resetToPreview() {
         reset();
-        if (!mPausing) startCameraPreview();
+        if (!mPausing) {
+            mMosaicView.onPause();
+            mMosaicView.onResume();
+            startCameraPreview();
+        }
     }
 
     private void showFinalMosaic(Bitmap bitmap) {
